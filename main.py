@@ -7,6 +7,7 @@ API_ID = int(os.environ.get("API_ID", "33401543"))
 API_HASH = os.environ.get("API_HASH", "7cdea5bbc8bd991b4a49807ce86")
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 
+# Client Setup
 app = Client(
     "LoserBot",
     api_id=API_ID,
@@ -17,17 +18,23 @@ app = Client(
 
 @app.on_message(filters.command("start") & filters.private)
 async def start(client, message):
-    await message.reply_text("💪 **Dekh Bhai! Bot ab Bilkul ON hai!**\n\nAb crash nahi hoga.")
+    await message.reply_text("💪 **Bhai! Bot ab Zinda hai!**\n\nAb ye crash nahi hoga, loop fix kar diya hai.")
 
-# --- THE FIX FOR PYTHON 3.14 ---
-async def main():
+@app.on_message(filters.command("id"))
+async def get_id(client, message):
+    await message.reply_text(f"👤 Your ID: `{message.from_user.id}`")
+
+# --- NO-CRASH RUNNER ---
+async def run_bot():
     async with app:
-        print("🚀 BOT IS RUNNING!")
-        await asyncio.Future() # Isse bot chalta rahega
+        print("🚀 BOT STARTED SUCCESSFULLY!")
+        await asyncio.Event().wait()
 
 if __name__ == "__main__":
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
     try:
-        asyncio.run(main())
+        loop.run_until_complete(run_bot())
     except KeyboardInterrupt:
         pass
         
