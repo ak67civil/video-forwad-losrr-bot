@@ -1,31 +1,33 @@
+import os
+import asyncio
 from pyrogram import Client, filters
 
-API_ID = int(os.environ.get("API_ID"))
-API_HASH = os.environ.get("API_HASH")
+# Heroku Config Vars
+API_ID = int(os.environ.get("API_ID", "33401543"))
+API_HASH = os.environ.get("API_HASH", "7cdea5bbc8bd991b4a49807ce86")
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 
-SOURCE_CHANNEL = int(os.environ.get("SOURCE_CHANNEL"))
-TARGET_CHANNEL = int(os.environ.get("TARGET_CHANNEL"))
-LOG_CHANNEL = int(os.environ.get("LOG_CHANNEL"))
-
 app = Client(
-    "forward-bot",
+    "LoserBot",
     api_id=API_ID,
     api_hash=API_HASH,
-    bot_token=BOT_TOKEN
+    bot_token=BOT_TOKEN,
+    in_memory=True
 )
 
 @app.on_message(filters.command("start") & filters.private)
 async def start(client, message):
-    await message.reply_text("✅ Bot is running perfectly!")
+    await message.reply_text("💪 **Dekh Bhai! Bot ab Bilkul ON hai!**\n\nAb crash nahi hoga.")
 
-@app.on_message(filters.chat(SOURCE_CHANNEL))
-async def auto_forward(client, message):
+# --- THE FIX FOR PYTHON 3.14 ---
+async def main():
+    async with app:
+        print("🚀 BOT IS RUNNING!")
+        await asyncio.Future() # Isse bot chalta rahega
+
+if __name__ == "__main__":
     try:
-        await message.copy(TARGET_CHANNEL)
-        await message.copy(LOG_CHANNEL)
-        print("Forwarded")
-    except Exception as e:
-        print(e)
-
-app.run()
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        pass
+        
